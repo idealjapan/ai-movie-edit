@@ -123,10 +123,11 @@ if mode in ["SRTのみ（字幕）", "両方生成"] and not api_key:
     st.warning("⚠️ サイドバーでOpenAI APIキーを入力してください")
 else:
     # ファイルアップロード
+    st.warning("⚠️ ファイルサイズ制限: 500MB以下の動画をアップロードしてください")
     uploaded_file = st.file_uploader(
         "動画ファイルを選択",
-        type=['mp4', 'mov', 'avi', 'mkv', 'm4v'],
-        help="対応形式: MP4, MOV, AVI, MKV, M4V"
+        type=['mp4', 'mov', 'avi', 'mkv', 'm4v', 'webm'],
+        help="対応形式: MP4, MOV, AVI, MKV, M4V, WebM (最大500MB)"
     )
     
     if uploaded_file is not None:
