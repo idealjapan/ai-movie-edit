@@ -15,6 +15,7 @@ from utils.caption_formatter_japanese import JapaneseCaptionFormatter
 from utils.silence_detector import SilenceDetector
 from utils.edl_generator import EDLGenerator
 from utils.video_metadata import VideoMetadataExtractor
+from config_custom import get_api_config
 
 # ページ設定
 st.set_page_config(
@@ -77,11 +78,26 @@ with st.sidebar:
     # SRT設定
     if mode in ["SRTのみ（字幕）", "両方生成"]:
         st.subheader("📝 字幕設定")
-        api_key = st.text_input(
-            "OpenAI APIキー",
-            type="password",
-            help="sk-で始まるAPIキーを入力してください"
-        )
+        
+        # API設定を取得
+        try:
+            api_config = get_api_config()
+            if api_config['is_custom']:
+                st.info("🏢 会社のAPIを使用しています")
+                api_key = api_config['api_key']
+            else:
+                api_key = st.text_input(
+                    "OpenAI APIキー",
+                    type="password",
+                    help="sk-で始まるAPIキーを入力してください"
+                )
+        except ValueError:
+            api_key = st.text_input(
+                "APIキー",
+                type="password",
+                help="APIキーを入力してください"
+            )
+            
         max_chars = st.slider(
             "1行あたりの最大文字数",
             min_value=10,
@@ -201,11 +217,27 @@ else:
                         progress_start = 40 if mode == "両方生成" else 20
                         progress_bar.progress(progress_start)
                         
-                        transcriber = ImprovedTranscriber(
-                            api_key,
-                            "https://api.openai.com/v1/audio/transcriptions",
-                            "whisper-1"
-                        )
+                        # API設定を取得
+                        try:
+                            api_config = get_api_config()
+                            if api_config['is_custom']:
+                                transcriber = ImprovedTranscriber(
+                                    api_config['api_key'],
+                                    api_config['whisper_endpoint'],
+                                    api_config['whisper_model']
+                                )
+                            else:
+                                transcriber = ImprovedTranscriber(
+                                    api_key,
+                                    api_config['whisper_endpoint'],
+                                    api_config['whisper_model']
+                                )
+                        except:
+                            transcriber = ImprovedTranscriber(
+                                api_key,
+                                "https://api.openai.com/v1/audio/transcriptions",
+                                "whisper-1"
+                            )
                         transcript = transcriber.transcribe(audio_path)
                         
                         if not transcript:
@@ -220,12 +252,30 @@ else:
                         status_text.text("✂️ キャプションをフォーマット中...")
                         progress_bar.progress(progress_start + 20)
                         
-                        formatter = JapaneseCaptionFormatter(
-                            api_key,
-                            "https://api.openai.com/v1/chat/completions",
-                            "gpt-4o",
-                            max_chars_per_line=max_chars
-                        )
+                        # API設定を取得
+                        try:
+                            api_config = get_api_config()
+                            if api_config['is_custom']:
+                                formatter = JapaneseCaptionFormatter(
+                                    api_config['api_key'],
+                                    api_config['gpt_endpoint'],
+                                    api_config['gpt_model'],
+                                    max_chars_per_line=max_chars
+                                )
+                            else:
+                                formatter = JapaneseCaptionFormatter(
+                                    api_key,
+                                    api_config['gpt_endpoint'],
+                                    api_config['gpt_model'],
+                                    max_chars_per_line=max_chars
+                                )
+                        except:
+                            formatter = JapaneseCaptionFormatter(
+                                api_key,
+                                "https://api.openai.com/v1/chat/completions",
+                                "gpt-4o",
+                                max_chars_per_line=max_chars
+                            )
                         formatted_text = formatter.format_captions(transcript['text'])
                         
                         # SRT生成
