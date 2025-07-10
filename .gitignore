@@ -1,0 +1,82 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+.venv
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Project specific
+temp/
+output/
+*.xml
+*.edl
+*.srt
+*.wav
+*.mp3
+*.json
+sample_data/
+test_*.py
+*_test.py
+archive/
+silence_test_results.json
+
+# Keep these files
+!requirements.txt
+!requirements_web.txt
+!vercel.json
+!packages.txt
+!.streamlit/config.toml
+
+# Logs
+*.log
+
+# Environment variables
+.env
+.env.local
+
+# Media files
+*.mp4
+*.mov
+*.avi
+*.mkv
+*.MOV
+*.MP4
+
+# Backup files
+*_backup.*
+*_fixed.*
+*_updated.*
+*_old.*
+*.bak
